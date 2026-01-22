@@ -58,4 +58,4 @@ class Solution:
       solutions.append(sol)
     return solutions
   
-print(len(Solution().generateTrees(8)))
+print(len(Solution().generateTrees(5)))
