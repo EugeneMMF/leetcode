@@ -9,8 +9,9 @@ class TreeNode:
 
 class Solution:
   def minDepth(self, root: Optional[TreeNode]) -> int:
+    if not root: return 0
     nodes = [root]
-    i = 0
+    i = 1
     while True:
       tmp = []
       for node in nodes:
