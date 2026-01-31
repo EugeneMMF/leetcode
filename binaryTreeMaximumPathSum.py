@@ -17,6 +17,8 @@ class Solution:
       right = helper(node.right)
       ln = left + node.val
       rn = right + node.val
-      maximum = max(ln, rn, node.val, ln + right, maximum)
-      return max(node.val, ln, rn)
-    return max(maximum, helper(root))
+      t = max(ln, rn, node.val)
+      maximum = max(t, ln + right, maximum)
+      return t
+    t = helper(root)
+    return max(maximum, t)
