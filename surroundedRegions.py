@@ -6,7 +6,7 @@ class Solution:
     Do not return anything, modify board in-place instead.
     """
     m,n = len(board), len(board[0])
-    
+
     def dfs(r,c):
       if r < 0 or r >= m or c < 0 or c >= n or board[r][c] != 'O':
         return
@@ -15,7 +15,7 @@ class Solution:
       dfs(r-1,c)
       dfs(r,c+1)
       dfs(r,c-1)
-    
+
     for r in range(m):
       dfs(r,0)
       dfs(r,n-1)
