@@ -1,0 +1,58 @@
+import bisect
+
+class Solution:
+    def maxSumSubmatrix(self, matrix: list[list[int]], k: int) -> int:
+        m = len(matrix)
+        n = len(matrix[0])
+
+        ans = float('-inf')
+
+        # Optimize by ensuring the outer loops (columns) iterate over the smaller dimension.
+        # This makes the 1D problem (inner loop using prefix sums) operate on the larger dimension.
+        # If m > n, transpose the matrix to swap dimensions.
+        if m > n:
+            matrix = [list(row) for row in zip(*matrix)]
+            m, n = n, m # Swap m and n dimensions to reflect the new matrix shape
+
+        # Iterate over all possible column pairs (c1, c2)
+        for c1 in range(n):
+            # row_sums will store the sum of elements for each row within the current column strip (from c1 to c2).
+            # Its length is m (number of rows in the potentially transposed matrix).
+            row_sums = [0] * m
+            for c2 in range(c1, n):
+                # Update row_sums by adding elements from the current column c2
+                for r in range(m):
+                    row_sums[r] += matrix[r][c2]
+
+                # Now, row_sums is a 1D array. We need to find the maximum subarray sum <= k in row_sums.
+                current_prefix_sum = 0
+                prefix_sums_list = [0] # Stores prefix sums encountered so far, always kept sorted.
+                                        # Initial 0 handles subarrays starting from index 0.
+                current_max_sum_1d = float('-inf')
+
+                for val in row_sums:
+                    current_prefix_sum += val
+                    
+                    # We are looking for prefix_sum_j - prefix_sum_i <= k
+                    # which implies prefix_sum_i >= prefix_sum_j - k (where prefix_sum_j is current_prefix_sum)
+                    # To maximize (current_prefix_sum - prefix_sum_i), we need the smallest prefix_sum_i
+                    # that satisfies the condition.
+                    
+                    target_for_search = current_prefix_sum - k
+                    
+                    # Find the insertion point for target_for_search in prefix_sums_list
+                    # This finds the smallest element >= target_for_search.
+                    idx = bisect.bisect_left(prefix_sums_list, target_for_search)
+                    
+                    if idx < len(prefix_sums_list):
+                        found_prefix_sum_i = prefix_sums_list[idx]
+                        candidate_sum = current_prefix_sum - found_prefix_sum_i
+                        current_max_sum_1d = max(current_max_sum_1d, candidate_sum)
+                    
+                    # Add the current_prefix_sum to the sorted list
+                    bisect.insort_left(prefix_sums_list, current_prefix_sum)
+                
+                # Update the overall maximum rectangle sum
+                ans = max(ans, current_max_sum_1d)
+                
+        return ans
