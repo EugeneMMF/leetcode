@@ -1,0 +1,49 @@
+class Solution:
+    def magicalString(self, n: int) -> int:
+        if n == 0:
+            return 0
+        if n <= 3:
+            return 1
+
+        # The magical string s itself is the sequence of lengths of its groups.
+        # As per the problem description, s starts with "122...".
+        # We store these as integers in a list.
+        s_values = [1, 2, 2]
+        
+        # 'read_idx' points to the element in 's_values' whose value determines
+        # the length of the next group of characters to be appended.
+        # s_values[0] (1) implies a group of '1's of length 1.
+        # s_values[1] (2) implies a group of '2's of length 2.
+        # s_values[2] (2) implies a group of '1's of length 2.
+        # So, we've used s_values[0] and s_values[1] to get the initial s_values.
+        # The next length to read is at index 2.
+        read_idx = 2
+
+        # 'next_char' is the character (1 or 2) that will be appended 'length' times.
+        # The groups of characters alternate: '1's, '2's, '1's, '2's, and so on.
+        # Since s_values[0] determined a '1' group and s_values[1] determined a '2' group,
+        # the character for the group whose length is s_values[read_idx] (i.e., s_values[2])
+        # should be '1'.
+        next_char = 1 
+
+        # Generate the magical string 's_values' until its length reaches 'n'.
+        while len(s_values) < n:
+            # Get the length of the group to append from the current 'read_idx'.
+            length = s_values[read_idx]
+
+            # Append 'next_char' 'length' times to 's_values'.
+            for _ in range(length):
+                s_values.append(next_char)
+                # If adding this character makes the string length 'n', we can stop.
+                if len(s_values) == n:
+                    break
+            
+            # Toggle 'next_char' for the next group (1 becomes 2, 2 becomes 1).
+            next_char = 3 - next_char
+            
+            # Move to the next element in 's_values' to read its length.
+            read_idx += 1
+        
+        # After generation, count the number of '1's in the first 'n' elements
+        # of the magical string.
+        return s_values[:n].count(1)
