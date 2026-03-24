@@ -1,0 +1,16 @@
+class Solution:
+    def preorder(self, root: 'Node') -> list[int]:
+        if not root:
+            return []
+
+        result = []
+        stack = [root]
+
+        while stack:
+            node = stack.pop()
+            result.append(node.val)
+            if node.children:
+                for child in reversed(node.children):
+                    stack.append(child)
+        
+        return result
