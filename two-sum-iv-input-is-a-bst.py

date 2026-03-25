@@ -1,0 +1,22 @@
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Solution:
+    def findTarget(self, root: Optional[TreeNode], k: int) -> bool:
+        def inorder(node):
+            if not node:
+                return
+            yield from inorder(node.left)
+            yield node.val
+            yield from inorder(node.right)
+
+        seen = set()
+        for val in inorder(root):
+            complement = k - val
+            if complement in seen:
+                return True
+            seen.add(val)
+        return False
