@@ -1,0 +1,51 @@
+class Solution:
+    def maxSumOfThreeSubarrays(self, nums: List[int], k: int) -> List[int]:
+        n = len(nums)
+        prefix_sum = [0] * (n + 1)
+        for i in range(n):
+            prefix_sum[i + 1] = prefix_sum[i] + nums[i]
+
+        def get_sum(i):
+            return prefix_sum[i + k] - prefix_sum[i]
+
+        left_max_sum = [0] * n
+        left_max_idx = [0] * n
+        current_max_sum = 0
+        for i in range(n - k + 1):
+            current_sum = get_sum(i)
+            if current_sum > current_max_sum:
+                current_max_sum = current_sum
+                left_max_idx[i] = i
+            else:
+                left_max_idx[i] = left_max_idx[i - 1] if i > 0 else 0
+            left_max_sum[i] = current_max_sum
+
+
+        right_max_sum = [0] * n
+        right_max_idx = [0] * n
+        current_max_sum = 0
+        for i in range(n - k, -1, -1):
+            current_sum = get_sum(i)
+            if current_sum >= current_max_sum:
+                current_max_sum = current_sum
+                right_max_idx[i] = i
+            else:
+                right_max_idx[i] = right_max_idx[i + 1] if i < n - 1 else n - k
+            right_max_sum[i] = current_max_sum
+
+        max_total_sum = 0
+        result = []
+
+        for j in range(k, n - 2 * k + 1):
+            left_idx = left_max_idx[j - k]
+            right_idx = right_max_idx[j + k]
+            current_total_sum = get_sum(left_idx) + get_sum(j) + get_sum(right_idx)
+
+            if current_total_sum > max_total_sum:
+                max_total_sum = current_total_sum
+                result = [left_idx, j, right_idx]
+            elif current_total_sum == max_total_sum:
+                if [left_idx, j, right_idx] < result:
+                    result = [left_idx, j, right_idx]
+
+        return result
