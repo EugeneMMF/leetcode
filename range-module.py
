@@ -1,0 +1,49 @@
+class RangeModule:
+
+    def __init__(self):
+        self.ranges = []
+
+    def addRange(self, left: int, right: int) -> None:
+        merged = []
+        i = 0
+        while i < len(self.ranges) and self.ranges[i][1] < left:
+            merged.append(self.ranges[i])
+            i += 1
+
+        while i < len(self.ranges) and self.ranges[i][0] <= right:
+            left = min(left, self.ranges[i][0])
+            right = max(right, self.ranges[i][1])
+            i += 1
+        merged.append([left, right])
+
+        while i < len(self.ranges):
+            merged.append(self.ranges[i])
+            i += 1
+        self.ranges = merged
+
+    def queryRange(self, left: int, right: int) -> bool:
+        for start, end in self.ranges:
+            if start <= left and right <= end:
+                return True
+        return False
+
+    def removeRange(self, left: int, right: int) -> None:
+        merged = []
+        i = 0
+        while i < len(self.ranges) and self.ranges[i][1] <= left:
+            merged.append(self.ranges[i])
+            i += 1
+
+        while i < len(self.ranges) and self.ranges[i][0] < right:
+            start, end = self.ranges[i]
+            if start < left:
+                merged.append([start, left])
+            if end > right:
+                merged.append([right, end])
+            i += 1
+
+        while i < len(self.ranges):
+            merged.append(self.ranges[i])
+            i += 1
+        self.ranges = merged
+
