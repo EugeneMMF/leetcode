@@ -1,3 +1,4 @@
+
 class Solution:
     def maxAreaOfIsland(self, grid: list[list[int]]) -> int:
         m = len(grid)
@@ -5,17 +6,15 @@ class Solution:
         max_area = 0
 
         def dfs(r, c):
-            if not (0 <= r < m and 0 <= c < n and grid[r][c] == 1):
+            if r < 0 or r >= m or c < 0 or c >= n or grid[r][c] == 0:
                 return 0
-
+            
             grid[r][c] = 0
             current_area = 1
-
             current_area += dfs(r + 1, c)
             current_area += dfs(r - 1, c)
             current_area += dfs(r, c + 1)
             current_area += dfs(r, c - 1)
-
             return current_area
 
         for r in range(m):
