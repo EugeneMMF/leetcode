@@ -1,0 +1,71 @@
+class DSU:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.size = [1] * n
+
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+
+    def union(self, x, y):
+        rootX = self.find(x)
+        rootY = self.find(y)
+        if rootX != rootY:
+            if self.size[rootX] < self.size[rootY]:
+                rootX, rootY = rootY, rootX
+            self.parent[rootY] = rootX
+            self.size[rootX] += self.size[rootY]
+
+class Solution:
+    def hitBricks(self, grid: list[list[int]], hits: list[list[int]]) -> list[int]:
+        m, n = len(grid), len(grid[0])
+        
+        for r, c in hits:
+            if grid[r][c] == 1:
+                grid[r][c] = -1
+        
+        dsu = DSU(m * n + 1)
+        
+        def get_index(r, c):
+            return r * n + c
+
+        for r in range(m):
+            for c in range(n):
+                if grid[r][c] == 1:
+                    idx = get_index(r, c)
+                    if r == 0:
+                        dsu.union(idx, m * n) 
+                    for dr, dc in [(0, 1), (1, 0)]:
+                        nr, nc = r + dr, c + dc
+                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == 1:
+                            dsu.union(idx, get_index(nr, nc))
+                            
+        ans = []
+        for i in range(len(hits) - 1, -1, -1):
+            r, c = hits[i]
+            
+            if grid[r][c] == -1:
+                grid[r][c] = 1
+                idx = get_index(r, c)
+                
+                initial_top_size = dsu.size[dsu.find(m * n)]
+                
+                if r == 0:
+                    dsu.union(idx, m * n)
+
+                for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                    nr, nc = r + dr, c + dc
+                    if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == 1:
+                        dsu.union(idx, get_index(nr, nc))
+
+                current_top_size = dsu.size[dsu.find(m * n)]
+                
+                if current_top_size > initial_top_size:
+                    ans.append(current_top_size - initial_top_size - 1)
+                else:
+                    ans.append(0)
+            else:
+                ans.append(0)
+        
+        return ans[::-1]
