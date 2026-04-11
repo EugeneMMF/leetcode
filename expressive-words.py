@@ -2,33 +2,34 @@ from typing import List
 
 class Solution:
     def expressiveWords(self, s: str, words: List[str]) -> int:
-        def encode(t):
-            chars = []
-            counts = []
+        def groups(t):
+            res = []
             i = 0
             n = len(t)
             while i < n:
                 j = i
                 while j < n and t[j] == t[i]:
                     j += 1
-                chars.append(t[i])
-                counts.append(j - i)
+                res.append((t[i], j - i))
                 i = j
-            return chars, counts
-        s_chars, s_counts = encode(s)
+            return res
+        sg = groups(s)
         ans = 0
         for w in words:
-            w_chars, w_counts = encode(w)
-            if w_chars != s_chars:
+            wg = groups(w)
+            if len(sg) != len(wg):
                 continue
             ok = True
-            for sc, wc in zip(s_counts, w_counts):
-                if sc < 3:
-                    if wc != sc:
+            for (cs, csz), (cw, cz) in zip(sg, wg):
+                if cs != cw:
+                    ok = False
+                    break
+                if csz < 3:
+                    if csz != cz:
                         ok = False
                         break
                 else:
-                    if wc > sc:
+                    if cz > csz or cz < 1:
                         ok = False
                         break
             if ok:
