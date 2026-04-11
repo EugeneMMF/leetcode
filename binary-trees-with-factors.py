@@ -1,31 +1,17 @@
 class Solution:
-    def numFactoredBinaryTrees(self, arr: list[int]) -> int:
+    def numFactoredBinaryTrees(self, arr):
         MOD = 10**9 + 7
         arr.sort()
-        
+        s = set(arr)
         dp = {}
-        
-        arr_set = set(arr)
-        
-        for x in arr:
-            dp[x] = 1
-            
-            for y in arr:
-                if y * y > x:
+        for v in arr:
+            total = 1
+            for left in arr:
+                if left > v:
                     break
-                
-                if x % y == 0:
-                    z = x // y
-                    
-                    if z in arr_set:
-                        
-                        if y == z:
-                            dp[x] = (dp[x] + dp[y] * dp[z]) % MOD
-                        else:
-                            dp[x] = (dp[x] + 2 * dp[y] * dp[z]) % MOD
-                            
-        total_trees = 0
-        for val in dp.values():
-            total_trees = (total_trees + val) % MOD
-            
-        return total_trees
+                if v % left == 0:
+                    right = v // left
+                    if right in s:
+                        total = (total + dp[left] * dp[right]) % MOD
+            dp[v] = total
+        return sum(dp.values()) % MOD
