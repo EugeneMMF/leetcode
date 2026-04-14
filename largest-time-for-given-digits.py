@@ -1,19 +1,15 @@
-import itertools
-
 class Solution:
-    def largestTimeFromDigits(self, arr: list[int]) -> str:
-        latest_time = ""
-
-        for p in itertools.permutations(arr):
-            h1, h2, m1, m2 = p
-            
-            hours = h1 * 10 + h2
-            minutes = m1 * 10 + m2
-
-            if 0 <= hours <= 23 and 0 <= minutes <= 59:
-                current_time_str = f"{hours:02}:{minutes:02}"
-
-                if not latest_time or current_time_str > latest_time:
-                    latest_time = current_time_str
-        
-        return latest_time
+    def largestTimeFromDigits(self, arr):
+        from itertools import permutations
+        best = -1
+        for p in permutations(arr):
+            h = p[0] * 10 + p[1]
+            m = p[2] * 10 + p[3]
+            if 0 <= h < 24 and 0 <= m < 60:
+                total = h * 60 + m
+                if total > best:
+                    best = total
+        if best == -1:
+            return ""
+        h, m = divmod(best, 60)
+        return f"{h:02d}:{m:02d}"
