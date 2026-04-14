@@ -1,27 +1,15 @@
-import math
-
 class Solution:
-    def minAreaRect(self, points: list[list[int]]) -> int:
-        point_set = set()
-        for x, y in points:
-            point_set.add((x, y))
-
-        min_area = math.inf
-
+    def minAreaRect(self, points):
+        point_set = { (x, y) for x, y in points }
+        min_area = float('inf')
         n = len(points)
         for i in range(n):
+            x1, y1 = points[i]
             for j in range(i + 1, n):
-                p1_x, p1_y = points[i]
-                p2_x, p2_y = points[j]
-
-                if p1_x == p2_x or p1_y == p2_y:
-                    continue
-
-                if (p1_x, p2_y) in point_set and (p2_x, p1_y) in point_set:
-                    current_area = abs(p2_x - p1_x) * abs(p2_y - p1_y)
-                    min_area = min(min_area, current_area)
-
-        if min_area == math.inf:
-            return 0
-        else:
-            return min_area
+                x2, y2 = points[j]
+                if x1 != x2 and y1 != y2:
+                    if (x1, y2) in point_set and (x2, y1) in point_set:
+                        area = abs(x1 - x2) * abs(y1 - y2)
+                        if area < min_area:
+                            min_area = area
+        return 0 if min_area == float('inf') else min_area
