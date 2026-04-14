@@ -1,48 +1,34 @@
-import collections
-
 class Solution:
-    def shortestBridge(self, grid: list[list[int]]) -> int:
+    def shortestBridge(self, grid):
         n = len(grid)
-        q = collections.deque()
-        
-        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-
-        def dfs(r, c):
-            if not (0 <= r < n and 0 <= c < n and grid[r][c] == 1):
+        from collections import deque
+        visited = [[False]*n for _ in range(n)]
+        q = deque()
+        dirs = [(1,0),(-1,0),(0,1),(0,-1)]
+        def dfs(i,j):
+            if i<0 or i>=n or j<0 or j>=n or visited[i][j] or grid[i][j]==0:
                 return
-            
-            grid[r][c] = 2
-            q.append((r, c))
-            
-            for dr, dc in directions:
-                dfs(r + dr, c + dc)
-
-        found_first_island = False
-        for r in range(n):
-            for c in range(n):
-                if grid[r][c] == 1:
-                    dfs(r, c)
-                    found_first_island = True
+            visited[i][j]=True
+            q.append((i,j))
+            for di,dj in dirs:
+                dfs(i+di,j+dj)
+        found=False
+        for i in range(n):
+            if found: break
+            for j in range(n):
+                if grid[i][j]==1:
+                    dfs(i,j)
+                    found=True
                     break
-            if found_first_island:
-                break
-        
-        distance = 0
+        steps=0
         while q:
-            current_level_size = len(q)
-            for _ in range(current_level_size):
-                r, c = q.popleft()
-                
-                for dr, dc in directions:
-                    nr, nc = r + dr, c + dc
-                    
-                    if 0 <= nr < n and 0 <= nc < n:
-                        if grid[nr][nc] == 1:
-                            return distance
-                        if grid[nr][nc] == 0:
-                            grid[nr][nc] = 2 
-                            q.append((nr, nc))
-            
-            distance += 1
-        
-        return -1
+            for _ in range(len(q)):
+                i,j = q.popleft()
+                for di,dj in dirs:
+                    ni,nj = i+di,j+dj
+                    if 0<=ni<n and 0<=nj<n and not visited[ni][nj]:
+                        if grid[ni][nj]==1:
+                            return steps
+                        visited[ni][nj]=True
+                        q.append((ni,nj))
+            steps+=1
