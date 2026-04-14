@@ -1,18 +1,15 @@
-class Solution:
-    def diStringMatch(self, s: str) -> list[int]:
-        n = len(s)
-        perm = []
-        low = 0
-        high = n
+from typing import List
 
-        for char in s:
-            if char == 'I':
-                perm.append(low)
-                low += 1
+class Solution:
+    def diStringMatch(self, s: str) -> List[int]:
+        lo, hi = 0, len(s)
+        res = []
+        for ch in s:
+            if ch == 'I':
+                res.append(lo)
+                lo += 1
             else:
-                perm.append(high)
-                high -= 1
-        
-        perm.append(low) 
-        
-        return perm
+                res.append(hi)
+                hi -= 1
+        res.append(lo)
+        return res
