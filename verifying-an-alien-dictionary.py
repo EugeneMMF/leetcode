@@ -1,28 +1,16 @@
+from typing import List
+
 class Solution:
-    def isAlienSorted(self, words: list[str], order: str) -> bool:
-        order_map = {}
-        for i, char in enumerate(order):
-            order_map[char] = i
-
-        def compare_words(word1, word2):
-            len1, len2 = len(word1), len(word2)
-            
-            for i in range(max(len1, len2)):
-                char1_rank = -1
-                if i < len1:
-                    char1_rank = order_map[word1[i]]
-                
-                char2_rank = -1
-                if i < len2:
-                    char2_rank = order_map[word2[i]]
-                
-                if char1_rank != char2_rank:
-                    return char1_rank < char2_rank
-            
-            return True
-
+    def isAlienSorted(self, words: List[str], order: str) -> bool:
+        rank = {c: i for i, c in enumerate(order)}
         for i in range(len(words) - 1):
-            if not compare_words(words[i], words[i+1]):
+            w1, w2 = words[i], words[i + 1]
+            j = 0
+            while j < len(w1) and j < len(w2) and w1[j] == w2[j]:
+                j += 1
+            if j == len(w2) and j < len(w1):
                 return False
-        
+            if j < len(w1) and j < len(w2):
+                if rank[w1[j]] > rank[w2[j]]:
+                    return False
         return True
