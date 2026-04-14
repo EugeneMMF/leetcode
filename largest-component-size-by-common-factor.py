@@ -1,55 +1,43 @@
-from collections import defaultdict
-
-class DSU:
-    def __init__(self, n):
-        self.parent = list(range(n + 1))
-
-    def find(self, i):
-        if self.parent[i] == i:
-            return i
-        self.parent[i] = self.find(self.parent[i])
-        return self.parent[i]
-
-    def union(self, i, j):
-        root_i = self.find(i)
-        root_j = self.find(j)
-        if root_i != root_j:
-            self.parent[root_j] = root_i
-            return True
-        return False
-
 class Solution:
-    def largestComponentSize(self, nums: list[int]) -> int:
-        if not nums:
-            return 0
-
+    def largestComponentSize(self, nums):
+        n = len(nums)
         max_val = max(nums)
-        dsu = DSU(max_val)
-
-        def get_prime_factors(n):
-            factors = set()
-            d = 2
-            temp = n
-            while d * d <= temp:
-                if temp % d == 0:
-                    factors.add(d)
-                    while temp % d == 0:
-                        temp //= d
-                d += 1
-            if temp > 1:
-                factors.add(temp)
-            return list(factors)
-
-        for num in nums:
-            factors = get_prime_factors(num)
-            if factors:
-                dsu.union(num, factors[0])
-                for i in range(1, len(factors)):
-                    dsu.union(factors[0], factors[i])
-
-        component_counts = defaultdict(int)
-        for num in nums:
-            root = dsu.find(num)
-            component_counts[root] += 1
-        
-        return max(component_counts.values())
+        spf = list(range(max_val + 1))
+        for i in range(2, int(max_val ** 0.5) + 1):
+            if spf[i] == i:
+                step = i
+                start = i * i
+                for j in range(start, max_val + 1, step):
+                    if spf[j] == j:
+                        spf[j] = i
+        parent = list(range(n))
+        size = [1] * n
+        def find(x):
+            while parent[x] != x:
+                parent[x] = parent[parent[x]]
+                x = parent[x]
+            return x
+        def union(a, b):
+            ra, rb = find(a), find(b)
+            if ra == rb:
+                return
+            if size[ra] < size[rb]:
+                ra, rb = rb, ra
+            parent[rb] = ra
+            size[ra] += size[rb]
+        prime_to_index = {}
+        for i, num in enumerate(nums):
+            x = num
+            while x > 1:
+                p = spf[x]
+                while x % p == 0:
+                    x //= p
+                if p in prime_to_index:
+                    union(i, prime_to_index[p])
+                else:
+                    prime_to_index[p] = i
+        ans = 0
+        for i in range(n):
+            if parent[i] == i and size[i] > ans:
+                ans = size[i]
+        return ans
