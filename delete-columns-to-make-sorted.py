@@ -1,14 +1,13 @@
 class Solution:
-    def minDeletionSize(self, strs: list[str]) -> int:
-        num_rows = len(strs)
-        num_cols = len(strs[0])
-        
-        deleted_columns_count = 0
-        
-        for j in range(num_cols):
-            for i in range(num_rows - 1):
-                if strs[i][j] > strs[i+1][j]:
-                    deleted_columns_count += 1
+    def minDeletionSize(self, strs):
+        if not strs:
+            return 0
+        m = len(strs)
+        n = len(strs[0])
+        deletions = 0
+        for col in range(n):
+            for row in range(1, m):
+                if strs[row][col] < strs[row-1][col]:
+                    deletions += 1
                     break
-                    
-        return deleted_columns_count
+        return deletions
