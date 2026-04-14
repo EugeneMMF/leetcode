@@ -1,25 +1,21 @@
+from typing import List
+
 class Solution:
-    def bagOfTokensScore(self, tokens: list[int], power: int) -> int:
+    def bagOfTokensScore(self, tokens: List[int], power: int) -> int:
         tokens.sort()
-        
-        n = len(tokens)
-        left = 0
-        right = n - 1
-        
-        score = 0
-        max_score = 0
-        
-        while left <= right:
-            if power >= tokens[left]:
-                power -= tokens[left]
+        l, r = 0, len(tokens) - 1
+        score = max_score = 0
+        while l <= r:
+            if power >= tokens[l]:
+                power -= tokens[l]
                 score += 1
-                left += 1
-                max_score = max(max_score, score)
-            elif score >= 1 and left < right:
-                power += tokens[right]
+                l += 1
+                if score > max_score:
+                    max_score = score
+            elif score > 0:
+                power += tokens[r]
                 score -= 1
-                right -= 1
+                r -= 1
             else:
                 break
-                
         return max_score
