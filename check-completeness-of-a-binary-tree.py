@@ -1,20 +1,16 @@
-# Definition for a binary tree node.
-# class TreeNode:
-#     def __init__(self, val=0, left=None, right=None):
-#         self.val = val
-#         self.left = left
-#         self.right = right
+from collections import deque
+
 class Solution:
-    def isCompleteTree(self, root: Optional[TreeNode]) -> bool:
-        queue = collections.deque([root])
-        null_encountered = False
-        while queue:
-            node = queue.popleft()
-            if node is None:
-                null_encountered = True
-            else:
-                if null_encountered:
-                    return False
-                queue.append(node.left)
-                queue.append(node.right)
+    def isCompleteTree(self, root):
+        q = deque([root])
+        end = False
+        while q:
+            node = q.popleft()
+            if not node:
+                end = True
+                continue
+            if end:
+                return False
+            q.append(node.left)
+            q.append(node.right)
         return True
