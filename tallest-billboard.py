@@ -1,11 +1,12 @@
 class Solution:
-    def tallestBillboard(self, rods: list[int]) -> int:
+    def tallestBillboard(self, rods):
         dp = {0: 0}
         for rod in rods:
-            new_dp = dp.copy()
-            for diff, height in dp.items():
-                new_dp[diff + rod] = max(new_dp.get(diff + rod, 0), height + rod)
-                new_dp[abs(diff - rod)] = max(new_dp.get(abs(diff - rod), 0), height + max(0, rod - diff))
-            dp = new_dp
+            ndp = dp.copy()
+            for diff, tall in dp.items():
+                ndp[diff + rod] = max(ndp.get(diff + rod, 0), tall + rod)
+                nd = abs(diff - rod)
+                newTall = tall + max(0, rod - diff)
+                ndp[nd] = max(ndp.get(nd, 0), newTall)
+            dp = ndp
         return dp.get(0, 0)
-
