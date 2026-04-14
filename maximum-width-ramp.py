@@ -1,13 +1,14 @@
+from typing import List
+
 class Solution:
     def maxWidthRamp(self, nums: List[int]) -> int:
-        n = len(nums)
-        max_width = 0
         stack = []
-        for i in range(n):
-            if not stack or nums[stack[-1]] > nums[i]:
+        for i, v in enumerate(nums):
+            if not stack or v < nums[stack[-1]]:
                 stack.append(i)
-
-        for j in range(n - 1, -1, -1):
+        ans = 0
+        for j in range(len(nums) - 1, -1, -1):
             while stack and nums[stack[-1]] <= nums[j]:
-                max_width = max(max_width, j - stack.pop())
-        return max_width
+                ans = max(ans, j - stack[-1])
+                stack.pop()
+        return ans
