@@ -1,34 +1,27 @@
+from typing import List
+
 class Solution:
-    def maxLength(self, arr: list[str]) -> int:
-        
-        candidate_masks = []
+    def maxLength(self, arr: List[str]) -> int:
+        masks = []
         for s in arr:
-            mask = 0
-            has_duplicates = False
-            for char_code in map(ord, s):
-                bit = 1 << (char_code - ord('a'))
-                if (mask & bit) != 0:
-                    has_duplicates = True
+            m = 0
+            dup = False
+            for ch in s:
+                bit = 1 << (ord(ch) - 97)
+                if m & bit:
+                    dup = True
                     break
-                mask |= bit
-            if not has_duplicates:
-                candidate_masks.append((mask, len(s)))
-
-        self.max_len = 0
-
-        def backtrack(index, current_mask, current_length):
-            self.max_len = max(self.max_len, current_length)
-
-            if index == len(candidate_masks):
-                return
-
-            backtrack(index + 1, current_mask, current_length)
-
-            word_mask, word_len = candidate_masks[index]
-
-            if (word_mask & current_mask) == 0:
-                backtrack(index + 1, current_mask | word_mask, current_length + word_len)
-
-        backtrack(0, 0, 0)
-
-        return self.max_len
+                m |= bit
+            if not dup:
+                masks.append((m, len(s)))
+        best = 0
+        def dfs(idx, cur_mask, cur_len):
+            nonlocal best
+            if cur_len > best:
+                best = cur_len
+            for i in range(idx, len(masks)):
+                m, l = masks[i]
+                if cur_mask & m == 0:
+                    dfs(i + 1, cur_mask | m, cur_len + l)
+        dfs(0, 0, 0)
+        return best
