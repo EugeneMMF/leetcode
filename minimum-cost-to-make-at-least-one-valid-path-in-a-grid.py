@@ -1,39 +1,26 @@
-from collections import deque
-
 class Solution:
-    def minCost(self, grid: list[list[int]]) -> int:
-        m = len(grid)
-        n = len(grid[0])
-
-        dist = [[float('inf')] * n for _ in range(m)]
-
+    def minCost(self, grid):
+        from collections import deque
+        m, n = len(grid), len(grid[0])
+        dirs = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        dist = [[10**9] * n for _ in range(m)]
         dq = deque()
-
         dist[0][0] = 0
-        dq.appendleft((0, 0, 0))
-
-        dr = [0, 0, 1, -1] 
-        dc = [1, -1, 0, 0] 
-
+        dq.append((0, 0))
         while dq:
-            cost, r, c = dq.popleft()
-
-            if cost > dist[r][c]:
+            i, j = dq.popleft()
+            d = dist[i][j]
+            if i == m - 1 and j == n - 1:
                 continue
-
-            for i in range(4):
-                nr, nc = r + dr[i], c + dc[i]
-
-                if 0 <= nr < m and 0 <= nc < n:
-                    move_cost = 0 if grid[r][c] == (i + 1) else 1
-                    
-                    new_total_cost = cost + move_cost
-
-                    if new_total_cost < dist[nr][nc]:
-                        dist[nr][nc] = new_total_cost
-                        if move_cost == 0:
-                            dq.appendleft((new_total_cost, nr, nc))
+            for idx, (dx, dy) in enumerate(dirs, 1):
+                ni, nj = i + dx, j + dy
+                if 0 <= ni < m and 0 <= nj < n:
+                    w = 0 if grid[i][j] == idx else 1
+                    nd = d + w
+                    if nd < dist[ni][nj]:
+                        dist[ni][nj] = nd
+                        if w == 0:
+                            dq.appendleft((ni, nj))
                         else:
-                            dq.append((new_total_cost, nr, nc))
-
+                            dq.append((ni, nj))
         return dist[m - 1][n - 1]
