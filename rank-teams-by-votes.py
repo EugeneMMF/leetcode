@@ -1,18 +1,9 @@
 class Solution:
-    def rankTeams(self, votes: list[str]) -> str:
-        num_positions = len(votes[0])
-        
-        team_stats = {}
-        
-        for team_char in votes[0]:
-            team_stats[team_char] = [0] * num_positions
-            
-        for vote_str in votes:
-            for position, team_char in enumerate(vote_str):
-                team_stats[team_char][position] += 1
-                
-        teams = list(team_stats.keys())
-        
-        teams.sort(key=lambda team: tuple([-count for count in team_stats[team]] + [team]))
-        
-        return "".join(teams)
+    def rankTeams(self, votes):
+        m = len(votes[0])
+        cnt = {c: [0] * m for c in votes[0]}
+        for v in votes:
+            for i, ch in enumerate(v):
+                cnt[ch][i] += 1
+        teams = sorted(cnt.keys(), key=lambda t: tuple([-cnt[t][i] for i in range(m)]) + (t,))
+        return ''.join(teams)
