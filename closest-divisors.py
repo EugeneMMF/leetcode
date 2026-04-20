@@ -1,22 +1,17 @@
 class Solution:
-    def closestDivisors(self, num: int) -> list[int]:
-        def find_closest_divisors_for_target(n):
-            a, b = 1, n
-            i = 1
-            while i * i <= n:
-                if n % i == 0:
-                    a = i
-                    b = n // i
-                i += 1
-            return a, b
-
-        target1 = num + 1
-        target2 = num + 2
-
-        a1, b1 = find_closest_divisors_for_target(target1)
-        a2, b2 = find_closest_divisors_for_target(target2)
-
-        if abs(a1 - b1) <= abs(a2 - b2):
-            return [a1, b1]
-        else:
-            return [a2, b2]
+    def closestDivisors(self, num: int):
+        import math
+        best_pair = None
+        best_diff = None
+        for add in (1, 2):
+            target = num + add
+            root = int(math.isqrt(target))
+            for i in range(root, 0, -1):
+                if target % i == 0:
+                    a, b = i, target // i
+                    diff = b - a
+                    if best_diff is None or diff < best_diff:
+                        best_diff = diff
+                        best_pair = [a, b]
+                    break
+        return best_pair
