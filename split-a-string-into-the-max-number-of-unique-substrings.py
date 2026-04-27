@@ -1,18 +1,19 @@
 class Solution:
     def maxUniqueSplit(self, s: str) -> int:
-        self.max_splits = 0
-        
-        def backtrack(index, current_split):
-            if index == len(s):
-                self.max_splits = max(self.max_splits, len(current_split))
-                return
-            
-            for i in range(index, len(s)):
-                substring = s[index:i+1]
-                if substring not in current_split:
-                    current_split.add(substring)
-                    backtrack(i + 1, current_split)
-                    current_split.remove(substring)
-                    
-        backtrack(0, set())
-        return self.max_splits
+        n = len(s)
+        from functools import lru_cache
+
+        @lru_cache(maxsize=None)
+        def dfs(i, used):
+            if i == n:
+                return 0
+            used_set = set(used.split(',')) if used else set()
+            best = 0
+            for j in range(i + 1, n + 1):
+                sub = s[i:j]
+                if sub not in used_set:
+                    new_used = used + (',' + sub if used else sub)
+                    best = max(best, 1 + dfs(j, new_used))
+            return best
+
+        return dfs(0, '')
