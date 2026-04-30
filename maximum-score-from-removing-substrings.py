@@ -1,22 +1,19 @@
 class Solution:
     def maximumGain(self, s: str, x: int, y: int) -> int:
-        def calculate_score(string, first_char, second_char, points):
-            score = 0
+        def remove(st, a, b, gain):
             stack = []
-            for char in string:
-                if stack and stack[-1] == first_char and char == second_char:
-                    score += points
+            total = 0
+            for ch in st:
+                if stack and stack[-1] == a and ch == b:
                     stack.pop()
+                    total += gain
                 else:
-                    stack.append(char)
-            return score, "".join(stack)
-
-        if x > y:
-            score1, remaining_s1 = calculate_score(s, 'a', 'b', x)
-            score2, _ = calculate_score(remaining_s1, 'b', 'a', y)
-            return score1 + score2
+                    stack.append(ch)
+            return ''.join(stack), total
+        if x >= y:
+            s, score1 = remove(s, 'a', 'b', x)
+            s, score2 = remove(s, 'b', 'a', y)
         else:
-            score1, remaining_s1 = calculate_score(s, 'b', 'a', y)
-            score2, _ = calculate_score(remaining_s1, 'a', 'b', x)
-            return score1 + score2
-
+            s, score1 = remove(s, 'b', 'a', y)
+            s, score2 = remove(s, 'a', 'b', x)
+        return score1 + score2
