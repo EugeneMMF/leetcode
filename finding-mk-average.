@@ -1,0 +1,77 @@
+class MKAverage:
+
+    def __init__(self, m: int, k: int):
+        self.m = m
+        self.k = k
+        self.window = []
+        self.size = 0
+        self.max_val = 100000
+        self.ft_count = [0] * (self.max_val + 2)
+        self.ft_sum = [0] * (self.max_val + 2)
+
+    def _update(self, idx, delta_count, delta_sum):
+        i = idx
+        while i <= self.max_val + 1:
+            self.ft_count[i] += delta_count
+            self.ft_sum[i] += delta_sum
+            i += i & -i
+
+    def _query_count(self, idx):
+        res = 0
+        i = idx
+        while i > 0:
+            res += self.ft_count[i]
+            i -= i & -i
+        return res
+
+    def _query_sum(self, idx):
+        res = 0
+        i = idx
+        while i > 0:
+            res += self.ft_sum[i]
+            i -= i & -i
+        return res
+
+    def _find_kth(self, k):
+        idx = 0
+        bit = 1 << 17
+        while bit:
+            nxt = idx + bit
+            if nxt <= self.max_val + 1 and self.ft_count[nxt] < k:
+                k -= self.ft_count[nxt]
+                idx = nxt
+            bit >>= 1
+        return idx + 1
+
+    def addElement(self, num: int) -> None:
+        self.window.append(num)
+        self._update(num, 1, num)
+        self.size += 1
+        if self.size > self.m:
+            old = self.window.pop(0)
+            self._update(old, -1, -old)
+            self.size -= 1
+
+    def calculateMKAverage(self) -> int:
+        if self.size < self.m:
+            return -1
+        total_sum = self._query_sum(self.max_val + 1)
+        total_count = self.m
+        k = self.k
+
+        idx_small = self._find_kth(k)
+        count_before_small = self._query_count(idx_small - 1)
+        sum_before_small = self._query_sum(idx_small - 1)
+        sum_smallest_k = sum_before_small + (k - count_before_small) * idx_small
+
+        remaining = total_count - k
+        idx_large = self._find_kth(remaining)
+        count_before_large = self._query_count(idx_large - 1)
+        sum_before_large = self._query_sum(idx_large - 1)
+        sum_first_remaining = sum_before_large + (remaining - count_before_large) * idx_large
+        sum_largest_k = total_sum - sum_first_remaining
+
+        middle_sum = total_sum - sum_smallest_k - sum_largest_k
+        return middle_sum // (total_count - 2 * k)
+
+# solution.py
