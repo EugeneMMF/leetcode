@@ -1,0 +1,48 @@
+class LockingTree:
+
+    def __init__(self, parent: List[int]):
+        self.parent = parent
+        self.n = len(parent)
+        self.children = [[] for _ in range(self.n)]
+        for i in range(1, self.n):
+            self.children[parent[i]].append(i)
+        self.locked_by = [0] * self.n
+
+    def lock(self, num: int, user: int) -> bool:
+        if self.locked_by[num] == 0:
+            self.locked_by[num] = user
+            return True
+        return False
+
+    def unlock(self, num: int, user: int) -> bool:
+        if self.locked_by[num] == user:
+            self.locked_by[num] = 0
+            return True
+        return False
+
+    def upgrade(self, num: int, user: int) -> bool:
+        if self.locked_by[num] != 0:
+            return False
+        anc = self.parent[num]
+        while anc != -1:
+            if self.locked_by[anc] != 0:
+                return False
+            anc = self.parent[anc]
+        stack = self.children[num][:]
+        has_locked_descendant = False
+        while stack:
+            cur = stack.pop()
+            if self.locked_by[cur] != 0:
+                has_locked_descendant = True
+            stack.extend(self.children[cur])
+        if not has_locked_descendant:
+            return False
+        stack = self.children[num][:]
+        while stack:
+            cur = stack.pop()
+            if self.locked_by[cur] != 0:
+                self.locked_by[cur] = 0
+            stack.extend(self.children[cur])
+        self.locked_by[num] = user
+        return True
+# solution.py
