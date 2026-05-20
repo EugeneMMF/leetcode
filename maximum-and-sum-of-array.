@@ -1,0 +1,23 @@
+class Solution:
+    def maximumANDSum(self, nums: List[int], numSlots: int) -> int:
+        n = len(nums)
+        pow3 = [1] * numSlots
+        for i in range(1, numSlots):
+            pow3[i] = pow3[i-1] * 3
+        from functools import lru_cache
+        @lru_cache(maxsize=None)
+        def dfs(idx, state):
+            if idx == n:
+                return 0
+            best = 0
+            for s in range(numSlots):
+                cnt = (state // pow3[s]) % 3
+                if cnt < 2:
+                    new_state = state + pow3[s]
+                    val = (nums[idx] & (s + 1)) + dfs(idx + 1, new_state)
+                    if val > best:
+                        best = val
+            return best
+        return dfs(0, 0)
+
+# solution.py
