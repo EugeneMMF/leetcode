@@ -1,0 +1,42 @@
+from typing import List
+
+class Solution:
+    def totalStrength(self, strength: List[int]) -> int:
+        mod = 10**9 + 7
+        n = len(strength)
+        # prefix sums of strengths
+        pref = [0] * (n + 1)
+        for i in range(n):
+            pref[i + 1] = (pref[i] + strength[i]) % mod
+        # prefix sums of prefix sums
+        pref2 = [0] * (n + 2)
+        for i in range(n + 1):
+            pref2[i + 1] = (pref2[i] + pref[i]) % mod
+        # previous less (strict)
+        prev = [-1] * n
+        stack = []
+        for i in range(n):
+            while stack and strength[stack[-1]] >= strength[i]:
+                stack.pop()
+            prev[i] = stack[-1] if stack else -1
+            stack.append(i)
+        # next less or equal
+        nxt = [n] * n
+        stack = []
+        for i in range(n - 1, -1, -1):
+            while stack and strength[stack[-1]] > strength[i]:
+                stack.pop()
+            nxt[i] = stack[-1] if stack else n
+            stack.append(i)
+        ans = 0
+        for i in range(n):
+            left = i - prev[i]
+            right = nxt[i] - i
+            sum_l = (pref2[i + 1] - pref2[prev[i] + 1]) % mod
+            sum_r = (pref2[nxt[i] + 1] - pref2[i + 1]) % mod
+            contrib = strength[i] % mod
+            contrib = contrib * ((left * sum_r - right * sum_l) % mod) % mod
+            ans = (ans + contrib) % mod
+        return ans
+
+# solution.py
