@@ -1,0 +1,18 @@
+class Solution:
+    def minCost(self, nums: List[int], cost: List[int]) -> int:
+        pairs = sorted(zip(nums, cost))
+        total_cost = sum(cost)
+        half = (total_cost + 1) // 2
+        cum = 0
+        target = pairs[0][0]
+        for val, c in pairs:
+            cum += c
+            if cum >= half:
+                target = val
+                break
+        res = 0
+        for val, c in pairs:
+            res += c * abs(val - target)
+        return res
+
+# solution.py
