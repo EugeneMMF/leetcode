@@ -1,0 +1,26 @@
+class Solution:
+    def smallestBeautifulString(self, s: str, k: int) -> str:
+        n = len(s)
+        letters = [chr(ord('a') + i) for i in range(k)]
+        arr = list(s)
+        for i in range(n - 1, -1, -1):
+            curr = arr[i]
+            idx = ord(curr) - ord('a')
+            for next_idx in range(idx + 1, k):
+                c = letters[next_idx]
+                if i > 0 and arr[i - 1] == c:
+                    continue
+                if i > 1 and arr[i - 2] == c:
+                    continue
+                arr[i] = c
+                # fill suffix
+                for j in range(i + 1, n):
+                    for cj in letters:
+                        if j > 0 and arr[j - 1] == cj:
+                            continue
+                        if j > 1 and arr[j - 2] == cj:
+                            continue
+                        arr[j] = cj
+                        break
+                return ''.join(arr)
+        return ''
