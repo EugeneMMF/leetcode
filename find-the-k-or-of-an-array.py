@@ -1,0 +1,13 @@
+import typing
+
+class Solution:
+    def findKOr(self, nums: typing.List[int], k: int) -> int:
+        result = 0
+        for bit in range(31):
+            count = 0
+            for num in nums:
+                if num >> bit & 1:
+                    count += 1
+            if count >= k:
+                result |= 1 << bit
+        return result
