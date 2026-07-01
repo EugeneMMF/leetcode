@@ -1,7 +1,9 @@
 class Solution:
     def beautifulIndices(self, s: str, a: str, b: str, k: int) -> List[int]:
-        def kmp_occurrences(text, pattern):
+        def kmp_positions(text, pattern):
             n, m = len(text), len(pattern)
+            if m == 0 or n < m:
+                return []
             lps = [0] * m
             length = 0
             i = 1
@@ -31,14 +33,12 @@ class Solution:
                     else:
                         i += 1
             return res
+        pos_a = kmp_positions(s, a)
+        pos_b = kmp_positions(s, b)
         import bisect
-        a_pos = kmp_occurrences(s, a)
-        b_pos = kmp_occurrences(s, b)
         res = []
-        for i in a_pos:
-            left = bisect.bisect_left(b_pos, i - k)
-            if left < len(b_pos) and abs(b_pos[left] - i) <= k:
-                res.append(i)
-            elif left > 0 and abs(b_pos[left - 1] - i) <= k:
+        for i in pos_a:
+            idx = bisect.bisect_left(pos_b, i - k)
+            if idx < len(pos_b) and abs(pos_b[idx] - i) <= k:
                 res.append(i)
         return res
