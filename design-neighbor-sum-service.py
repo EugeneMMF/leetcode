@@ -1,37 +1,42 @@
- 
+from typing import List
+
 class NeighborSum:
 
     def __init__(self, grid: List[List[int]]):
-        self.grid = grid
         self.n = len(grid)
-        self.position = {}
-        for i in range(self.n):
-            for j in range(self.n):
-                self.position[grid[i][j]] = (i, j)
+        self.grid = grid
+        self.pos = {}
+        for i, row in enumerate(grid):
+            for j, val in enumerate(row):
+                self.pos[val] = (i, j)
 
     def adjacentSum(self, value: int) -> int:
-        x, y = self.position[value]
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-        total = 0
-        for dx, dy in directions:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < self.n and 0 <= ny < self.n:
-                total += self.grid[nx][ny]
-        return total
+        i, j = self.pos[value]
+        s = 0
+        if i > 0:
+            s += self.grid[i - 1][j]
+        if i < self.n - 1:
+            s += self.grid[i + 1][j]
+        if j > 0:
+            s += self.grid[i][j - 1]
+        if j < self.n - 1:
+            s += self.grid[i][j + 1]
+        return s
 
     def diagonalSum(self, value: int) -> int:
-        x, y = self.position[value]
-        directions = [(1, 1), (1, -1), (-1, -1), (-1, 1)]
-        total = 0
-        for dx, dy in directions:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < self.n and 0 <= ny < self.n:
-                total += self.grid[nx][ny]
-        return total
-
+        i, j = self.pos[value]
+        s = 0
+        if i > 0 and j > 0:
+            s += self.grid[i - 1][j - 1]
+        if i > 0 and j < self.n - 1:
+            s += self.grid[i - 1][j + 1]
+        if i < self.n - 1 and j > 0:
+            s += self.grid[i + 1][j - 1]
+        if i < self.n - 1 and j < self.n - 1:
+            s += self.grid[i + 1][j + 1]
+        return s
 
 # Your NeighborSum object will be instantiated and called as such:
 # obj = NeighborSum(grid)
 # param_1 = obj.adjacentSum(value)
 # param_2 = obj.diagonalSum(value)
-
