@@ -1,30 +1,30 @@
-
+from typing import List
+import sys
+sys.setrecursionlimit(1 << 20)
 class Solution:
     def countGoodNodes(self, edges: List[List[int]]) -> int:
-        from collections import defaultdict
-        
-        graph = defaultdict(list)
+        n = len(edges) + 1
+        g = [[] for _ in range(n)]
         for a, b in edges:
-            graph[a].append(b)
-            graph[b].append(a)
-        
-        def dfs(node, parent):
-            child_sizes = []
-            count = 1
-            for neighbor in graph[node]:
-                if neighbor != parent:
-                    size = dfs(neighbor, node)
-                    child_sizes.append(size)
-                    count += size
-            
-            if len(set(child_sizes)) <= 1:
-                nonlocal good_node_count
-                good_node_count += 1
-            
-            return count
-        
-        good_node_count = 0
+            g[a].append(b)
+            g[b].append(a)
+        res = 0
+        def dfs(u, p):
+            nonlocal res
+            total = 1
+            child_size = None
+            good = True
+            for v in g[u]:
+                if v == p:
+                    continue
+                sz = dfs(v, u)
+                total += sz
+                if child_size is None:
+                    child_size = sz
+                elif child_size != sz:
+                    good = False
+            if good:
+                res += 1
+            return total
         dfs(0, -1)
-        
-        return good_node_count
-
+        return res
