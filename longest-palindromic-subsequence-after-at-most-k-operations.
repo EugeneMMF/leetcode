@@ -1,0 +1,35 @@
+class Solution:
+    def longestPalindromicSubsequence(self, s: str, k: int) -> int:
+        n = len(s)
+        if n == 0:
+            return 0
+        dp = [[[0] * (k + 1) for _ in range(n)] for _ in range(n)]
+        for i in range(n):
+            for c in range(k + 1):
+                dp[i][i][c] = 1
+        for length in range(2, n + 1):
+            for i in range(n - length + 1):
+                j = i + length - 1
+                a = ord(s[i]) - 97
+                b = ord(s[j]) - 97
+                d = min((b - a) % 26, (a - b) % 26)
+                for cost in range(k + 1):
+                    best = 0
+                    if i + 1 <= j:
+                        val = dp[i + 1][j][cost]
+                        if val > best:
+                            best = val
+                    if i <= j - 1:
+                        val = dp[i][j - 1][cost]
+                        if val > best:
+                            best = val
+                    if cost >= d:
+                        if i + 1 <= j - 1:
+                            inner = dp[i + 1][j - 1][cost - d]
+                        else:
+                            inner = 0
+                        val = inner + 2
+                        if val > best:
+                            best = val
+                    dp[i][j][cost] = best
+        return max(dp[0][n - 1])
