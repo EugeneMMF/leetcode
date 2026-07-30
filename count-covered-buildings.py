@@ -1,26 +1,27 @@
+from typing import List
+import bisect
+
 class Solution:
     def countCoveredBuildings(self, n: int, buildings: List[List[int]]) -> int:
-        row_min = {}
-        row_max = {}
-        col_min = {}
-        col_max = {}
+        row_map = {}
+        col_map = {}
         for x, y in buildings:
-            if y in row_min:
-                if x < row_min[y]:
-                    row_min[y] = x
-                if x > row_max[y]:
-                    row_max[y] = x
-            else:
-                row_min[y] = row_max[y] = x
-            if x in col_min:
-                if y < col_min[x]:
-                    col_min[x] = y
-                if y > col_max[x]:
-                    col_max[x] = y
-            else:
-                col_min[x] = col_max[x] = y
+            row_map.setdefault(x, []).append(y)
+            col_map.setdefault(y, []).append(x)
+        for lst in row_map.values():
+            lst.sort()
+        for lst in col_map.values():
+            lst.sort()
         count = 0
         for x, y in buildings:
-            if row_min[y] < x < row_max[y] and col_min[x] < y < col_max[x]:
+            row_list = row_map[x]
+            col_list = col_map[y]
+            idx_row = bisect.bisect_left(row_list, y)
+            left = idx_row > 0
+            right = idx_row < len(row_list) - 1
+            idx_col = bisect.bisect_left(col_list, x)
+            above = idx_col > 0
+            below = idx_col < len(col_list) - 1
+            if left and right and above and below:
                 count += 1
         return count
